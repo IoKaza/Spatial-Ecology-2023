@@ -1,0 +1,31 @@
+# this is an array
+primates <- c(3, 5, 9, 15, 40)  # I assign the values to a title I want with an arrow <-, I put the values into the () after c
+primates # I can see the dataset I created before
+
+# new set:
+crabs <- c(100, 70, 30, 10, 5) # I can create as many datasets as I want, using different titles
+crabs
+
+# first plot in R
+plot(primates, crabs) #The plot() function is used to draw points (markers) in a diagram
+
+plot(primates, crabs, col="red") #Set a colour
+
+plot(primates, crabs, col="red", pch=19) # Different plotting symbols are available in R. The graphical argument used to specify point shapes is pch
+
+plot(primates, crabs, col="red", pch=19, cex=2) #change the size of symbols and text relative to the default size
+
+plot(primates, crabs, col="red", pch=19, cex=6)
+
+plot(primates, crabs, col="red", pch=19, cex=6, main="My first ecological graph in R!") # set a title for the plot
+
+# create a dataframe
+ecoset <- data.frame(primates, crabs)
+ecoset
+
+# ecological numbers
+# mean number of individuals per site
+(3+5+9+15+40)/5
+
+# summary of the dataframe
+summary(ecoset) # laurel: Ecosets

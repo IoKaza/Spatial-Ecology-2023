@@ -1,0 +1,47 @@
+library(sdm)
+library(raster) # predictors
+library(rgdal)
+
+file <- system.file("external/species.shp", package="sdm")
+file
+species <- shapefile(file)
+
+plot(species)
+species #(presence=1, absence=0)
+
+
+# make a subset of all the presences (only the ones with 1)
+# with SQL I can pout conditions (like use only presence) SQL is donw with []
+
+presences <- species[species$Occurrence == 1, ]  #in SQL I use double equal sign OR != to not project the following
+
+
+#EXERCISE- SELECT THE ABSENCES
+
+absences <- species[species$Occurrence != 1, ]  #in SQL I use double equal sign OR != to not project the following
+
+plot(presences, col = "blue", pch=19)
+
+points(absences, col="red", pch=19)
+
+#predictors
+
+path <- system.file("external", package = "sdm")
+
+lst <- list.files(path=path,pattern='asc$',full.names = T) #
+lst
+
+preds <- stack(lst)
+plot(preds)
+
+preds
+
+#build the model
+
+datasdm <- sdmData(train=species, predictors = preds)  #train data are the points, predicrtors are the preds
+
+head(datasdm)
+m1 <- sdm(Occurence ~ elevation + precipitation + temperature + vegetation, data = datasdm, methods = "glm")
+
+p1 <- predict(m1, newdata = preds)
+

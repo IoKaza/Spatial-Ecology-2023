@@ -1,0 +1,265 @@
+library(raster)
+library(RStoolbox)
+
+setwd("C:\Users\liaka\Documents\Ready for DA\files to use\monitorng ecosystems")
+
+p224r63_2011 <- brick("p224r63_2011_masked.grd")
+library(raster)
+p224r63_2011
+
+
+plot(p224r63_2011)
+
+cl <- colorRampPalette(c('black','grey','light grey'))(100)
+plot(p224r63_2011, col=cl)
+
+
+plot(p224r63_2011$B1_sre, col=cl)
+plot(p224r63_2011$B1_sre[[1]], col=cl)
+
+
+#Change the colour ramp palette with colours from dark to light blue
+
+clb <- colorRampPalette(c('dark blue','blue','light blue'))(100) # 
+plot(p224r63_2011$B1_sre, col=clb)
+
+# to make multiframe (explain the amount of rows that I need) i use 
+par(mfrow=c(1,2))
+
+plot(p224r63_2011[[1]], col=cl)
+plot(p224r63_2011[[2]], col=cl)
+
+# Make multiframe with 4 bands (???????? ?????????????????????? ???????? ?????? ???????????? ?????? ??????????????, ?????????????? ????????????)
+
+par(mfrow=c(2,2))
+plot(p224r63_2011[[1]], col=cl)
+plot(p224r63_2011[[2]], col=cl)
+plot(p224r63_2011[[3]], col=cl)
+plot(p224r63_2011[[4]], col=cl)
+
+
+
+p224r63_2011 <- brick("p224r63_2011_masked.grd")
+p224r63_1988 <- brick("p224r63_1988_masked.grd")
+
+plotRGB(p224r63_1988, r=3, g=2, b=1, stretch="lin")
+plotRGB(p224r63_1988, r=4, g=3, b=2, stretch="lin")
+plotRGB(p224r63_1988, r=3, g=4, b=2, stretch="lin")
+
+#exercise make a multiframe with 2 rows and 1 column
+#plotting the 1988 and the 2011 image
+
+par(mfrow=c(2,1))
+
+
+plotRGB(p224r63_1988, r=3, g=2, b=4, stretch="lin")
+plotRGB(p224r63_2011, r=3, g=2, b=4, stretch="lin")
+
+#calculate the difference between images
+#multitemporal analysis
+
+difnir<- p224r63_1988[[4]] - p224r63_2011[[4]]
+
+cl <- colorRampPalette(c('orange','yellow','black'))(100)#
+plot(difnir, col=cl)
+
+
+##DVI is the index that means difference vegeration index using the near infrared and red light emmitted from each plant (NIF-RED=DIV)
+#Difference Vegetation Index 
+
+#Recent DVI (2011)-Calculate
+
+dvi2011 <- p224r63_2011[[4]] - p224r63_2011[[3]]
+plot(dvi2011)
+
+
+dvi1988 <- p224r63_1988[[4]] - p224r63_1988[[3]]
+plot(dvi1988)
+
+
+difdvi <- dvi1988 - dvi2011
+cl <-colorRampPalette(c('blue','white','red'))(100)#
+plot(difdvi, col=cl)
+
+##coppernicus 
+
+library(ncdf4) ##reading .nc files
+library(raster) #usual package
+library(ggplot2) # beautiful plots
+library(RStoolbox) #PS functions
+library(viridis) # legends color 
+library(patchwork) #multiframe for ggplot
+
+setwd("C:\\Users\\liaka\\Documents\\Ready for DA\\files to use\\monitorng ecosystems")
+
+## As it is an image, I load it with the order below
+
+snow <- raster("C:\\Users\\liaka\\Documents\\Ready for DA\\files to use\\monitorng ecosystems\\c_gls_SCE_202012210000_NHEMI_VIIRS_V1.0.1.nc")
+
+## exercise: plot the snow cover with ggplot and viridis 
+# to plot my data I use the ggplot function with () + and
+##on the line below I use geom.raster (as i use raster file) where i type (name of varieable i loaded my raster file so for this case "snow", mapping = aes(x=x, y=y, fill=the name that is appeared on the variant search) +
+# scale_fill_viridis(option="magma") to choose the type of colours i want to use i change the option (alwasy staying in the viridis palete)
+
+
+ggplot() +
+  geom_raster(snow, mapping = aes(x=x, y=y, fill=Snow.Cover.Extent)) +
+  scale_fill_viridis(option="mako")
+
+
+
+## to focus my selection of data over only europe (i have to create an extention right over the frame i want, but i do that using coordinates as it is more fixed and i can always use the exact rectangular)
+# Crop over Europe
+ext <- c(-20, 70, 20, 75) # the numbers are coordinates taken from the plot before to frame the area i am interested in 
+snow.europe <- crop(snow, ext) #inside crop(name of the file, the ext i want) and to name the variant i name it snow.europe
+
+# i replot the snow.europe to only use the data i want
+ggplot() +
+  geom_raster(snow.europe, mapping = aes(x=x, y=y, fill=Snow.Cover.Extent)) +
+  scale_fill_viridis(option="inferno")
+# i plot the two sets with the patchwork package
+# so i plot eack one of my variables NAMIng them (p1,p2) and using the function ggplot like before. i use as a first variable the snow and as a second the snow.europe)
+p1 <- ggplot() +
+  geom_raster(snow, mapping = aes(x=x, y=y, fill=Snow.Cover.Extent)) +
+  scale_fill_viridis(option="inferno")
+
+p2 <- ggplot() +
+  geom_raster(snow.europe, mapping = aes(x=x, y=y, fill=Snow.Cover.Extent)) +
+  scale_fill_viridis(option="inferno")
+
+p1 + p2
+
+
+## GREENLAND DATA ICE MELT
+
+# install.packages("raster")
+# install.packages("rasterVis")
+library(raster)
+library(ggplot2)
+library(RStoolbox)
+library(viridis)
+library(patchwork)
+
+# library(rasterVis)
+
+# library(rgdal)
+
+setwd("C:\\Users\\liaka\\Documents\\Ready for DA\\files to use\\monitorng ecosystems")
+
+##I load the files (images) with the raster function and name them
+
+lst_2000 <- raster("lst_2000.tif")
+lst_2005 <- raster("lst_2005.tif")
+lst_2010 <- raster("lst_2010.tif")
+lst_2015 <- raster("lst_2015.tif")
+
+
+#exercise: plot the lst_2000 with ggplot
+
+ggplot() +
+  geom_raster(lst_2000, mapping = aes(x=x, y=y, fill=lst_2000)) +
+  scale_fill_viridis(option="magma") 
+
+#to plot a tif file I have to create a data frame?
+
+#to reverse the colours on my plot 
+
+ggplot() +
+  geom_raster(lst_2000, mapping = aes(x=x, y=y, fill=lst_2000)) +
+  scale_fill_viridis(option="magma", direction=-1) 
+
+# to create a title for the plot
+ggplot() +
+  geom_raster(lst_2000, mapping = aes(x=x, y=y, fill=lst_2000)) +
+  scale_fill_viridis(option="magma", direction=-1) +
+  ggtitle("Temperature 2000")
+
+
+#??=the transparency i want on the map
+# to control the transparecy (up to 1) i use alpha
+
+ggplot() +
+  geom_raster(lst_2000, mapping = aes(x=x, y=y, fill=lst_2000)) +
+  scale_fill_viridis(option="magma", direction=-1, alpha=0.8) +
+  ggtitle("Temperature 2000")
+
+
+par(mfrow=c(2,2))
+plot(lst_2000)
+plot(lst_2005)
+plot(lst_2010)
+plot(lst_2015)
+
+
+##easier way to plot several images --make a loop
+#lapply function is used to apply a function over a list of files 
+#make a list of files (pattern=common characteristic of my file list) and name it 
+rlist <- list.files(pattern="lst")
+rlist
+
+
+# lapply takes the list and applies the function to each
+lapply
+
+#exercise -> list:rlist, function: the function with need to import lapply() and assign this function to an object
+
+####lapply(X, FUN, .)###
+
+#so x is rlist and FUN is function i want it to repeat. I also name it 
+
+import <- lapply(rlist, raster)
+import
+
+# i use stack  to 
+TGr <- stack(import)
+TGr
+# to plot TGr
+
+plot(TGr)
+
+#plot list 2000 and lst 2015 and combine them
+ggplot() +
+  geom_raster(TGr[[1]], mapping = aes(x=x, y=y, fill=lst_2000)) +
+  ggtitle("temperature 2000") +
+  scale_fill_viridis(option="inferno", alpha=0.8)
+
+ggplot() +
+  geom_raster(TGr[[4]], mapping = aes(x=x, y=y, fill=lst_2015)) +
+  ggtitle("temperature 2015") +
+  scale_fill_viridis(option="inferno", alpha=0.8, direction=-1)
+
+p1 <- ggplot() +
+  geom_raster(TGr[[1]], mapping = aes(x=x, y=y, fill=lst_2000)) +
+  ggtitle("temperature 2000") +
+  scale_fill_viridis(option="inferno", alpha=0.8, direction=-1)
+
+p2 <- ggplot() +
+  geom_raster(TGr[[4]], mapping = aes(x=x, y=y, fill=lst_2015)) +
+  ggtitle("temperature 2015") +
+  scale_fill_viridis(option="inferno", alpha=0.8, direction=-1)
+
+p1 + p2
+
+
+## make the differences between 2015 and 2000
+
+#so i do 2015-2000 to find the differences in temperature
+
+dift = TGr[[4]] - TGr[[1]]
+dift
+
+p3 <- ggplot() +
+  geom_raster(dift, mapping = aes(x=x, y=y, fill=layer)) +
+  ggtitle("Diff of temp 2015") +
+  scale_fill_viridis(option="plasma", alpha=0.8, direction=-1)
+
+p1+p2+p3
+
+
+## all red (=1) have high temperatures in 2000, 2=green in highest temperatures in 2005 and 4=blue in the highest temperatures of 2015)
+
+plotRGB(TGr, r=1, g=2, b=4, stretch= "lin")
+#or
+plotRGB(TGr, r=1, g=2, b=4, stretch= "hist")
+
+#check package colorist 

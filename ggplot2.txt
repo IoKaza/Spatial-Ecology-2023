@@ -1,0 +1,50 @@
+
+###### Installing the ggplot2 library / package
+
+install.packages("ggplot2")
+
+library(ggplot2)
+
+# ecological dataframe
+# biofuels
+biofuels <- c(120, 200, 350, 570, 750) # array of values: c
+biofuels
+# oxydative enzimes
+oxydative <- c(1200, 1300, 21000, 34000, 50000) 
+
+# dataframe
+d <- data.frame(biofuels, oxydative)        #create a dataframe including the previously created datasets assigning a name for it (d). I can also use the data.frame(biofuels,oxydative) function
+d
+
+ggplot(d, aes(x = biofuels, y = oxydative)) + geom_point()  # dataframe of interest, assigning of x and y axis using reference in form of point
+
+ggplot(d, aes(x = biofuels, y = oxydative)) + geom_point(size = 5, col = "red") #assign size and colour
+
+# lines
+ggplot(d, aes(x = biofuels, y = oxydative)) + geom_line() # same as before, but using lines instead of point
+
+# points + lines
+ggplot(d, aes(x = biofuels, y = oxydative)) + geom_point(size = 5, col = "red")  +  geom_line() 
+
+# polygons
+ggplot(d, aes(x = biofuels, y = oxydative)) + geom_polygon() 
+
+############## IMPORT DATA FROM AN EXTERNAL SOURCE
+
+# setwd("path/lab") #reploducible with the creation of a R project
+
+# setwd for Windows
+# setwd("C:/lab/")
+
+covid <- read.table("covid_agg.csv", header=TRUE) # when importing data from csv
+covid
+head(covid)
+
+summary(covid) # a glimpse of our data in the dataframe
+
+# ggplot2
+library(ggplot2)
+ggplot(covid, aes(x = lon, y = lat)) + geom_point()
+
+# changing the size of the data...
+ggplot(covid, aes(x = lon, y = lat, size = cases)) + geom_point() # assining the size of each point on our plot according to the number of cases present.
